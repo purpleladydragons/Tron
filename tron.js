@@ -106,12 +106,20 @@ var player = new (function(){
 	that.win = function(){ //try to make loss that actually ceases gameloop!
 		//lose game 
 		lost = true;
-		document.write("player 1 wins");	
+		ctx.font = '100pt Arial';
+                ctx.fillStyle = 'rgb(0,0,0)';
+                ctx.textAlign = 'center';
+                ctx.fillText("Player 1 wins!",(width/2)-20,(height/2)+85);
+	
 	}
 
 	that.tie = function(){
 		lost = true;
-		document.write("it's a tie");
+		ctx.font = '100pt Arial';
+                ctx.fillStyle = 'rgb(0,0,0)';
+                ctx.textAlign = 'center';
+                ctx.fillText("It's a tie!",(width/2)-20,(height/2)+85);
+
 	}
 	
 })();
@@ -178,9 +186,8 @@ var player2 = new (function(){
 			that.setPosition(that.x,that.y+that.movement);
 		//}
 	}
-
 	that.move = function(dir){
-		if(that.interval==3){ //this might cause unexpected lag between moves
+		if(that.interval == 3){ 
 			that.interval = 0;
 		if (dir == 'left'){
 			that.moveLeft();
@@ -197,7 +204,11 @@ var player2 = new (function(){
 	that.win = function(){ //try to make loss that actually ceases gameloop!
 		//lose game 
 		lost = true;
-		document.write("player 2 wins");	
+		ctx.font = '100pt Arial';
+                ctx.fillStyle = 'rgb(0,0,0)';
+                ctx.textAlign = 'center';
+                ctx.fillText("Player 2 wins!",(width/2)-20,(height/2)+85);
+
 	}
 	
 })();
@@ -234,30 +245,51 @@ var drawTrails = function(){
        }
 }
 
+
+var Restart = function(){
+        player.direction = 'right';
+	player.x = 9999999; //necessary because x/y value persists through game loss, setposition sets x value to prevx 
+	player.y = 9999999; //so x/y value when game lost will be in trails at start
+        player.setPosition((width/2)-256,height/2);
+	player2.direction = 'left';
+	player2.x = -9999999;
+	player2.y = -9999999;
+	player2.setPosition((width/2)+256,height/2);
+        lost = false;
+	trails = [];
+        GameLoop();
+}
+
+
 document.onkeypress = function(e){
 	if(e.keyCode) keycode = e.keyCode;
 	else{keycode = e.which}
 
-	ch = String.fromCharCode(keycode);
+	ch = keycode;
 
-	if(ch == 'a'){ //edit this so that keeps moveLeft()ing until alternate keypress
+
+	if(ch == 97){ //edit this so that keeps moveLeft()ing until alternate keypress
 		player.direction = 'left';
-	} else if(ch =='w'){
+	} else if(ch == 119){
 		player.direction = 'up';
-	} else if(ch =='d'){
+	} else if(ch == 100){
 		player.direction = 'right';
-	} else if(ch =='s'){
+	} else if(ch == 115){
 		player.direction = 'down';
 	} 
 
-	if(ch == 'j'){
+	if(ch == 106){
 		player2.direction = 'left';
-	} else if(ch == 'i'){
+	} else if(ch == 105){
 		player2.direction = 'up';
-	} else if(ch == 'l'){
+	} else if(ch == 108){
 		player2.direction = 'right';
-	} else if(ch == 'k'){
+	} else if(ch == 107){
 		player2.direction = 'down';
+	} 
+	
+	if(lost && ((ch == 114)||(ch == 32))){
+		Restart();
 	}
 }
 
@@ -291,7 +323,7 @@ var GameLoop = function(){
 	trails.push(new trail(player2.prevx,player2.prevy,2));	
 	player.move(player.direction);
 	player2.move(player2.direction);
-	drawTrails(); //i hate you so much. if you were a person i'd fucking slit your throat ad infinitum
+	drawTrails(); 
 	checkCollision();
 	if(!lost){
 		gLoop = setTimeout(GameLoop,1000/50);
